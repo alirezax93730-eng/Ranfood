@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101c35">
+  <meta name="description" content="سامانه سفارش غذای ران‌فود">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <title>RanFood | ران‌فود</title>
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuToggle" class="icon-btn" aria-label="باز کردن منو">☰</button>
+    <div class="brand"><span class="brand-mark">R</span><div><b>RanFood</b><small>سامانه سفارش غذا</small></div></div>
+    <button id="logoutBtn" class="ghost hidden">خروج</button>
+  </header>
+  <aside id="sidebar" class="sidebar">
+    <div class="side-head">منوی برنامه</div>
+    <button data-page="home">خانه</button>
+    <button data-page="restaurants">رستوران‌ها</button>
+    <button data-page="orders">سفارش‌های من</button>
+    <button data-page="manage" id="manageNav" class="hidden">مدیریت</button>
+    <button data-page="account">حساب کاربری</button>
+    <p class="side-note">ران‌فود • سفارش آسان، غذای خوشمزه</p>
+  </aside>
+  <main id="app" class="main">
+    <section id="setupNotice" class="panel notice hidden"></section>
+    <section id="authView" class="auth-wrap">
+      <div class="hero"><span class="eyebrow">به ران‌فود خوش آمدید</span><h1>غذای دلخواهت،<br><em>با چند لمس ساده</em></h1><p>برای ورود یا ساخت حساب، شماره تماس و رمز عبور را وارد کن.</p></div>
+      <div class="panel auth-panel">
+        <div class="tabs"><button id="loginTab" class="active">ورود</button><button id="signupTab">ثبت‌نام</button></div>
+        <label>نام و نام خانوادگی <input id="fullName" autocomplete="name" placeholder="فقط هنگام ثبت‌نام"></label>
+        <label>شماره تماس <input id="phone" inputmode="tel" placeholder="مثلاً 09123456789"></label>
+        <label>ایمیل <input id="email" type="email" autocomplete="email" placeholder="برای ورود امن Supabase لازم است"></label>
+        <label>رمز عبور <input id="password" type="password" autocomplete="current-password" placeholder="حداقل ۶ کاراکتر"></label>
+        <button id="authSubmit" class="primary wide">ورود</button>
+        <p id="authMessage" class="message"></p>
+        <small class="muted">نقش کاربران را مدیر سیستم از داخل دیتابیس تعیین می‌کند؛ ثبت‌نام عمومی فقط مشتری می‌سازد.</small>
+      </div>
+    </section>
+    <section id="contentView" class="hidden">
+      <div class="welcome panel"><div><span class="eyebrow">ران‌فود</span><h1 id="pageTitle">خانه</h1><p id="welcomeText">به پنل خودت خوش آمدی.</p></div><span class="welcome-icon">🍽️</span></div>
+      <div id="pageContent"></div>
+    </section>
+  </main>
+  <footer>© RanFood — سامانه سفارش غذا</footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

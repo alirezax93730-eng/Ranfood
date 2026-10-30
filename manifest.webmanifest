@@ -1,0 +1,11 @@
+{
+  "name": "RanFood",
+  "short_name": "RanFood",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f6fa",
+  "theme_color": "#101c35",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": []
+}
