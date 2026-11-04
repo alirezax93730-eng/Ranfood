@@ -3,8 +3,10 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./config.js";
 
 const $ = (id) => document.getElementById(id);
+
 const configured = SUPABASE_URL && SUPABASE_ANON_KEY &&
   !SUPABASE_ANON_KEY.startsWith("PASTE_");
+
 const supabase = configured
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
@@ -53,11 +55,19 @@ function msg(text, error = false) {
 
 function normalizeIranPhone(value) {
   let n = String(value || "").replace(/[\s\-()]/g, "");
+
   if (n.startsWith("+")) return n;
   if (n.startsWith("0098")) return "+" + n.slice(2);
   if (n.startsWith("98")) return "+" + n;
   if (n.startsWith("0")) return "+98" + n.slice(1);
+
   return n;
+}
+
+// شناسه داخلی حساب؛ ایمیل واقعی یا قابل مشاهده نیست.
+function internalEmailForPhone(phone) {
+  const digits = phone.replace(/\D/g, "");
+  return digits + "@phone.ranfood.invalid";
 }
 
 async function authenticate() {
@@ -74,10 +84,12 @@ async function authenticate() {
     return;
   }
 
-  if (password.length < 6) {
-    msg("رمز عبور باید حداقل ۶ نویسه داشته باشد.", true);
+  if (password.length < 8) {
+    msg("رمز عبور باید حداقل ۸ نویسه داشته باشد.", true);
     return;
   }
+
+  const internalEmail = internalEmailForPhone(phone);
 
   $("authSubmit").disabled = true;
 
@@ -91,10 +103,13 @@ async function authenticate() {
       }
 
       const { data, error } = await supabase.auth.signUp({
-        phone,
+        email: internalEmail,
         password,
         options: {
-          data: { full_name: fullName }
+          data: {
+            full_name: fullName,
+            phone: phone
+          }
         }
       });
 
@@ -102,26 +117,28 @@ async function authenticate() {
 
       if (!data.session) {
         msg(
-          "حساب ایجاد شد، اما ورود فوری فعال نیست. تنظیمات تأیید شماره در Supabase را بررسی کن.",
+          "حساب ایجاد شد، اما ورود فوری فعال نیست. تنظیم Confirm email در Supabase را بررسی کن.",
           true
         );
         return;
       }
 
       session = data.session;
+
       await ensureProfile(fullName, phone);
       await enterApp();
 
     } else {
       const { data, error } =
         await supabase.auth.signInWithPassword({
-          phone,
-          password
+          email: internalEmail,
+          password: password
         });
 
       if (error) throw error;
 
       session = data.session;
+
       await ensureProfile();
       await enterApp();
     }
@@ -150,7 +167,7 @@ async function ensureProfile(name = "", phone = "") {
       full_name:
         name || session.user.user_metadata?.full_name || "کاربر ران‌فود",
       phone:
-        phone || session.user.phone || null,
+        phone || session.user.user_metadata?.phone || null,
       role: "customer"
     };
 
@@ -451,6 +468,7 @@ async function boot() {
 
   supabase.auth.onAuthStateChange((_event, newSession) => {
     session = newSession;
+
     if (!newSession) {
       profile = null;
       showAuth();
@@ -458,4 +476,5 @@ async function boot() {
   });
 }
 
+// اجرای برنامه RanFood
 boot();
